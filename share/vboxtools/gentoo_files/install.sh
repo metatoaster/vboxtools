@@ -3,7 +3,7 @@ set -e
 source /etc/profile
 emerge --update --deep --newuse @world
 emerge app-admin/syslog-ng app-portage/gentoolkit net-misc/dhcpcd \
-    sys-apps/mlocate sys-block/parted sys-boot/grub:2 \
+    app-admin/logrotate sys-apps/mlocate sys-block/parted sys-boot/grub:2 \
     sys-kernel/genkernel-next sys-kernel/gentoo-sources sys-process/cronie \
     dev-vcs/git sys-power/acpid \
     net-misc/openntpd

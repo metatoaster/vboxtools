@@ -154,7 +154,9 @@ set_vm_common () {
     # this is an assumption
     export VBOX_NET=vboxnet0
     export VBOX_KNOWN_HOSTS=${VBOX_ROOT}/known_hosts
-    export VBOX_SSH_FLAGS=(
+
+    # this can't be exported because this is an array.
+    VBOX_SSH_FLAGS=(
         -oBatchMode=Yes
         -oUserKnownHostsFile="${VBOX_KNOWN_HOSTS}"
         -i "${VBOX_PRIVKEY}"
