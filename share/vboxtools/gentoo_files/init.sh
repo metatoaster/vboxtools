@@ -13,7 +13,8 @@ echo "extracting stage3"
 tar xpf stage3-amd64.tar --xattrs-include='*.*' --numeric-owner \
     -C /mnt/gentoo
 echo "extracting portage"
-tar xpf portage.tar --numeric-owner -C /mnt/gentoo/usr
+tar xpf portage.tar --numeric-owner -C /mnt/gentoo/var/db/repos
+mv /mnt/gentoo/var/db/repos/portage /mnt/gentoo/var/db/repos/gentoo
 mount -t proc proc /mnt/gentoo/proc
 mount -R /dev /mnt/gentoo/dev
 mount -R /sys /mnt/gentoo/sys
