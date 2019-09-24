@@ -5,7 +5,7 @@ emerge --update --deep --newuse @world
 emerge app-admin/syslog-ng app-portage/gentoolkit net-misc/dhcpcd \
     app-admin/logrotate sys-apps/mlocate sys-block/parted sys-boot/grub:2 \
     sys-kernel/genkernel-next sys-kernel/gentoo-sources sys-process/cronie \
-    dev-vcs/git sys-power/acpid \
+    dev-vcs/git sys-power/acpid app-misc/screen \
     net-misc/openntpd
 echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
 locale-gen
