@@ -1,0 +1,3 @@
+dev-lang/python sqlite
+dev-python/pypy sqlite
+dev-python/pypy3 sqlite
