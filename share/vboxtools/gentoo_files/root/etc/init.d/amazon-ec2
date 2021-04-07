@@ -1,18 +1,29 @@
 #!/sbin/openrc-run
 
+HOST=169.254.169.254
+
 depend() {
          before hostname
          need net.eth0
 }
 
 start() {
-        local instance_id=$(wget -t 2 -T 5 -q -O - http://169.254.169.254/latest/meta-data/instance-id)
-        [ -f "/var/lib/amazon-ec2" ] && [ "$(cat /var/lib/amazon-ec2)" = "$instance_id" ] && exit 0
+        einfo "Fetching metadata from EC2 servers..."
 
-        einfo "Fetching metadata from EC2 servers"
+        # 15 retries
+        for i in {0..15}; do
+            [ ${i} -ne 0 ] && sleep 1 && einfo "Fetching metadata from EC2 servers... (Retrying ${i}/15)"
+            local instance_id=$(wget -t 2 -T 5 -q -O - http://${HOST}/latest/meta-data/instance-id | xargs echo -n)
+            [ -n "${instance_id}" ] && break
+        done
+        if [ -z "${instance_id}" ]; then
+            eend 1
+            exit 1
+        fi
+        [ -f "/var/lib/amazon-ec2" ] && [ "$(cat /var/lib/amazon-ec2)" = "$instance_id" ] && eend 0 && exit 0
 
         ebegin "  hostname"
-        local hostname=$(wget -t 2 -T 5 -q -O - http://169.254.169.254/latest/meta-data/local-hostname)
+        local hostname=$(wget -t 2 -T 5 -q -O - http://${HOST}/latest/meta-data/local-hostname)
         echo "hostname=${hostname}" >> /etc/conf.d/hostname
         eend $?
 
@@ -20,9 +31,9 @@ start() {
 
         mkdir -p /root/.ssh
 
-        local keys=$(wget -t 2 -T 5 -q -O - http://169.254.169.254/latest/meta-data/public-keys/ | cut -d = -f 1 | xargs echo)
+        local keys=$(wget -t 2 -T 5 -q -O - http://${HOST}/latest/meta-data/public-keys/ | cut -d = -f 1 | xargs echo)
         [ -n "${keys}" ] && \
-            wget -t 2 -T 5 -q -O - $(for key in $keys; do echo "http://169.254.169.254/latest/meta-data/public-keys/$key/openssh-key"; done) \
+            wget -t 2 -T 5 -q -O - $(for key in $keys; do echo "http://${HOST}/latest/meta-data/public-keys/$key/openssh-key"; done) \
             >> /root/.ssh/authorized_keys \
             2>/dev/null
 
