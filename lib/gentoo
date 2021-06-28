@@ -30,6 +30,13 @@ prepare_gentoo_boot_iso_environment() {
     update_host_keys
 }
 
+_download_gentoo_portage() {
+    local url="${GENTOO_MIRROR}/snapshots/${GENTOO_PORTAGE_ID}-${1}.tar.xz"
+    local target=$(basename ${url})
+    wget -c -nv "${url}" && wget -c -nv "${url}.gpgsig"
+    [ ! -z "${2}" ] && eval "${2}='${target}'"
+}
+
 download_gentoo_portage() {
     # download the latest portage snapshot
     # default up to 5 days old
@@ -38,11 +45,7 @@ download_gentoo_portage() {
     # typically dated.
     for ((day=1; day<=age; day++)); do
         local date=$(date -u +%Y%m%d --date="$day day ago")
-        local url="${GENTOO_MIRROR}/snapshots/${GENTOO_PORTAGE_ID}-${date}.tar.xz"
-        local target=$(basename ${url})
-        wget -c -nv "${url}" && \
-            wget -c -nv "${url}.gpgsig" && \
-            eval "${1}='${target}'" && \
+        _download_gentoo_portage ${date} "${1}" && \
             return 0 || true  # keep going
     done
 
