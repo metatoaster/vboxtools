@@ -33,8 +33,9 @@ prepare_gentoo_boot_iso_environment() {
 _download_gentoo_portage() {
     local url="${GENTOO_MIRROR}/snapshots/${GENTOO_PORTAGE_ID}-${1}.tar.xz"
     local target=$(basename ${url})
-    wget -c -nv "${url}" && wget -c -nv "${url}.gpgsig"
-    [ ! -z "${2}" ] && eval "${2}='${target}'"
+    wget -c -nv "${url}" && wget -c -nv "${url}.gpgsig" && \
+        [ ! -z "${2}" ] && eval "${2}='${target}'" && return 0
+    return 1
 }
 
 download_gentoo_portage() {
