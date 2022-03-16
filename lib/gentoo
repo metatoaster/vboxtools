@@ -77,7 +77,7 @@ _download_gentoo_release() {
     info "downloading '${target}'"
     wget -c -nv "${url}"
     # also get the signed checksum file.
-    wget -c -nv "${url}.DIGESTS.asc"
+    wget -c -nv "${url}.asc"
     eval "${1}='${target}'"
 }
 
@@ -123,12 +123,8 @@ locate_gentoo_archives() {
 
 verify_gentoo_archives () {
     gpg --verify "${GENTOO_PORTAGE}.gpgsig" "${GENTOO_PORTAGE}"
-    gpg --verify "${GENTOO_STAGE3}.DIGESTS.asc"
-    gpg --verify "${GENTOO_BOOT_ISO}.DIGESTS.asc"
-    grep "$(sha512sum "${GENTOO_STAGE3}")" "${GENTOO_STAGE3}.DIGESTS.asc" >\
-        /dev/null || die "checksum error for \"${GENTOO_STAGE3}\""
-    grep "$(sha512sum "${GENTOO_BOOT_ISO}")" "${GENTOO_BOOT_ISO}.DIGESTS.asc" >\
-        /dev/null || die "checksum error for \"${GENTOO_BOOT_ISO}\""
+    gpg --verify "${GENTOO_STAGE3}.asc"
+    gpg --verify "${GENTOO_BOOT_ISO}.asc"
 }
 
 argparser_gentoo () {
