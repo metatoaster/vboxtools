@@ -98,6 +98,15 @@ find_vm () {
     VBoxManage list vms |grep "\"${name}\"" > /dev/null
 }
 
+start_vm() {
+    name="$1"
+    if [[ -z ${DISPLAY} ]]; then
+        VBoxManage startvm "${name}" --type headless
+    else
+        VBoxManage startvm "${name}"
+    fi
+}
+
 check_vm_running () {
     name="$1"
     VBoxManage list runningvms |grep "\"${name}\"" > /dev/null
@@ -170,7 +179,8 @@ update_host_keys () {
         return 1
     fi
     ssh-keygen -R "${VBOX_IP}" -f "${VBOX_KNOWN_HOSTS}" > /dev/null 2>&1
-    ssh-keyscan -H "${VBOX_IP}" 2>/dev/null >> "${VBOX_KNOWN_HOSTS}"
+    ssh-keyscan -H "${VBOX_IP}" -f "${VBOX_KNOWN_HOSTS}" 2>/dev/null >> "${VBOX_KNOWN_HOSTS}" || \
+        warn "failed to ssh-keyscan -H ${VBOX_IP}; host not online?"
 }
 
 find_vm_home () {
@@ -272,7 +282,7 @@ connect_vm () {
         return 1
     fi
     update_host_keys
-    ssh "${VBOX_SSH_FLAGS[@]}" root@${VBOX_IP}
+    ssh -o UserKnownHostsFile="${VBOX_KNOWN_HOSTS}" "${VBOX_SSH_FLAGS[@]}" root@${VBOX_IP}
 }
 
 # consider moving the argparse* things to own module

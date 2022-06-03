@@ -16,9 +16,11 @@ fi
 VBOX_NAME="${2}"
 OVA_FILE="${1}"
 
+source_vm_environ
+
 find_vm "${VBOX_NAME}" && die "vm \"${VBOX_NAME}\" already registered"
 
-VBoxManage import "${OVA_FILE}" --vsys 0 --vmname "${VBOX_NAME}"
+VBoxManage import "${OVA_FILE}" --vsys 0 --vmname "${VBOX_NAME}" --basefolder "${VBOX_ROOT}"
 
 find_vm_home "${VBOX_NAME}" || die "failed to find vm \"${VBOX_NAME}\""
 

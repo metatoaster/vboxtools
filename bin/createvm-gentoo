@@ -31,7 +31,7 @@ create_vm gentoo || \
 
 checkenvfile GENTOO_STAGE3 GENTOO_PORTAGE
 
-VBoxManage startvm "${VBOX_NAME}"
+start_vm "${VBOX_NAME}"
 
 # ensure all the VM setup is executed and checked in one step in own
 # subshell
@@ -68,7 +68,7 @@ sleep 1
 VBoxManage storageattach "${VBOX_NAME}" --storagectl IDE --port 0 --device 0 \
     --medium emptydrive
 
-VBoxManage startvm "${VBOX_NAME}"
+start_vm "${VBOX_NAME}"
 
 cat << EOF
 Once the VM is fully booted, connect to it with the following command:
