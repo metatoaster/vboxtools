@@ -70,6 +70,32 @@ runscancode () {
         VBoxManage controlvm "${target}" keyboardputscancode
 }
 
+_set_vm_mac_ip_arp () {
+    VBOX_IP=$(
+        arp -n | grep -i ${VBOX_MAC} | cut -d' ' -f1
+    )
+}
+
+_set_vm_mac_ip_dhcp () {
+    # This should work but sometimes lease expired?
+    net="$1"
+    VBOX_IP=$(echo $(
+        VBoxManage dhcpserver findlease \
+            --interface=${net} \
+            --mac-address=${VBOX_MAC} | grep 'IP Address' | cut -f2 -d\:
+    ))
+}
+
+_set_vm_mac_ip_dhcp_file () {
+    # instead, derive directly from the lease file
+    net="$1"
+    mac=$(echo ${VBOX_MAC} | tr '[:upper:]' '[:lower:]')
+    VBOX_IP=$(xmllint --xpath \
+        "string(//Lease[@mac='${mac}'][@state='acked']/Address/@value)" \
+        ~/.config/VirtualBox/HostInterfaceNetworking-${net}-Dhcpd.leases
+    )
+}
+
 set_vm_mac_ip () {
     name="$1"
     net="$2"
@@ -79,9 +105,11 @@ set_vm_mac_ip () {
         cut -b 2-
     )
     info "mac is $VBOX_MAC"
-    VBOX_IP=$(
-        arp -n | grep -i ${VBOX_MAC} | cut -d' ' -f1
-    )
+
+    _set_vm_mac_ip_dhcp $2
+    # _set_vm_mac_ip_dhcp_file $2
+    # _set_vm_mac_ip_arp $2
+
     if [ -z $VBOX_IP ]; then
         warn "failed to derive IP"
         return 1
