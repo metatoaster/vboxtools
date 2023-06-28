@@ -206,7 +206,9 @@ update_host_keys () {
         warn "known hosts file '${VBOX_KNOWN_HOSTS}' not found."
         return 1
     fi
+    info "ssh-keygen -R \"${VBOX_IP}\" -f \"${VBOX_KNOWN_HOSTS}\" > /dev/null 2>&1"
     ssh-keygen -R "${VBOX_IP}" -f "${VBOX_KNOWN_HOSTS}" > /dev/null 2>&1
+    info "ssh-keyscan -H \"${VBOX_IP}\" -f \"${VBOX_KNOWN_HOSTS}\" 2>/dev/null >> \"${VBOX_KNOWN_HOSTS}\""
     ssh-keyscan -H "${VBOX_IP}" -f "${VBOX_KNOWN_HOSTS}" 2>/dev/null >> "${VBOX_KNOWN_HOSTS}" || \
         warn "failed to ssh-keyscan -H ${VBOX_IP}; host not online?"
 }
