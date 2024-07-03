@@ -9,7 +9,7 @@ cleanup () {
 
 # include related libraries
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-source $DIR/../lib/gentoo
+source ${DIR}/../lib/gentoo
 
 # process command line arguments first to set environment variables from
 # valid command line arguments
@@ -17,7 +17,7 @@ export ARGPARSERS="common gentoo"
 
 # assigning creation only variables here.
 # TODO figure out how to best potentially override them?
-source $DIR/../share/config/vboxtools/gentoo-base
+source ${DIR}/../share/config/vboxtools/gentoo-base
 
 argparse "$@"
 
@@ -40,15 +40,18 @@ start_vm "${VBOX_NAME}"
     prepare_gentoo_boot_iso_environment
 
     scp "${VBOX_SSH_FLAGS[@]}" "${GENTOO_STAGE3}" \
-        root@$VBOX_IP:stage3-amd64.tar
+        root@${VBOX_IP}:stage3-amd64.tar
 
     scp "${VBOX_SSH_FLAGS[@]}" "${GENTOO_PORTAGE}" \
-        root@$VBOX_IP:portage.tar
+        root@${VBOX_IP}:portage.tar
 
     rsync -re "ssh $(printf "'%s' " "${VBOX_SSH_FLAGS[@]}")" \
-      "${GENTOO_FILES}/" root@$VBOX_IP:gentoo_files
+        "${GENTOO_FILES}/" root@${VBOX_IP}:gentoo_files
 
-    ssh "${VBOX_SSH_FLAGS[@]}" root@$VBOX_IP ./gentoo_files/init.sh
+    ssh "${VBOX_SSH_FLAGS[@]}" root@${VBOX_IP} \
+        sed -i "s,{GENTOO_MIRROR},${GENTOO_MIRROR}," ./gentoo_files/root/etc/portage/make.conf
+
+    ssh "${VBOX_SSH_FLAGS[@]}" root@${VBOX_IP} ./gentoo_files/init.sh
 ) &
 
 # wait for that to complete.
