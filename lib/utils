@@ -283,7 +283,7 @@ create_vm () {
     mkdir -p "${VBOX_ROOT}"
     VBoxManage createvm --name "${VBOX_NAME}" --basefolder "${VBOX_ROOT}" \
         --register
-    VBoxManage modifyvm "${VBOX_NAME}" --ostype Gentoo_64 --memory=4096 \
+    VBoxManage modifyvm "${VBOX_NAME}" --ostype Gentoo_64 --memory="${VBOX_MEM}" \
         --cpus $VBOX_N_CPU --ioapic on \
         --nic1 hostonly --nic2 nat --cableconnected1 on --cableconnected2 on \
         --nictype1 82540EM --nictype2 82540EM \
