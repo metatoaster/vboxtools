@@ -10,8 +10,7 @@ emerge app-admin/syslog-ng app-portage/gentoolkit net-misc/dhcpcd \
 echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
 locale-gen
 eselect locale set en_US.utf8
-echo UTC >> /etc/timezone
-emerge --config sys-libs/timezone-data
+ln -sf ../usr/share/zoneinfo/UTC /etc/localtime
 source /etc/profile
 mv /.config /usr/src/linux/.config
 genkernel --oldconfig --no-zfs --no-btrfs all
