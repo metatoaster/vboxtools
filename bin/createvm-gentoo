@@ -62,7 +62,8 @@ wait $! || cleanup
 activate_vm "${VBOX_NAME}"
 
 wait_vm_shutdown "${VBOX_NAME}" 15 || \
-    die "'${VBOX_NAME}' did not shutdown; cannot continue with verification"
+    forcepoweroff_vm "${VBOX_NAME}" 15 || \
+    warn "'${VBOX_NAME}' may not have shutdown cleanly, power off was forced; attempting verification"
 
 # timeout to wait for the VirtualBox registry to fully sync up
 sleep 1
